@@ -1,8 +1,10 @@
-import { createAuthClient } from "better-auth/react"
+import { createAuthClient } from "better-auth/react";
+
 export const authClient = createAuthClient({
-    /** The base URL of the server (optional if you're using the same domain) */
-    baseURL:  process.env.BETTER_AUTH_URL, 
-})
+  // Optional: only needed if your backend is on a separate URL.
+  // In Next.js browser code, env variables must start with NEXT_PUBLIC_
+  baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
+});
 
-
-export const { signIn, signUp, useSession } = createAuthClient()
+// Export the helper methods from the SAME authClient instance
+export const { signIn, signUp, useSession, signOut } = authClient;

@@ -55,7 +55,7 @@ export default function Navbar() {
               Sign In
             </Link>
             <Link
-              href="/get-started"
+              href="/sign-up"
               className="btn btn-sm h-10 px-5 rounded-xl border-0 bg-[#665df5] hover:bg-[#554be8] text-white font-medium normal-case shadow-none"
             >
               Get Started
@@ -113,7 +113,7 @@ export default function Navbar() {
               </li>
               <li className="sm:hidden mt-1">
                 <Link
-                  href="/get-started"
+                  href="/sign-up"
                   className="btn btn-sm h-10 bg-[#665df5] hover:bg-[#554be8] text-white border-0 rounded-xl justify-center"
                 >
                   Get Started
