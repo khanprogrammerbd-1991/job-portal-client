@@ -1,12 +1,27 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useSession, signOut } from "@/lib/auth-client";
 
 export default function Navbar() {
+  const router = useRouter();
+  const { data: session, isPending } = useSession();
+
   const navLinks = [
     { label: "Browse Jobs", href: "/jobs" },
     { label: "Company", href: "/company" },
     { label: "Pricing", href: "/pricing" },
   ];
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/sign-in");
+    router.refresh();
+  };
+
+  const userName = session?.user?.name || session?.user?.email || "Account";
 
   return (
     <header className="w-full bg-[#121214] text-gray-200 border-b border-white/10">
@@ -14,21 +29,25 @@ export default function Navbar() {
         {/* Left: Logo */}
         <div className="navbar-start">
           <Link href="/" className="flex items-center gap-2 focus:outline-none">
-            {/* Swap /images/logo.png with your file in public/images/ */}
             <Image
               src="/images/logo.png"
               alt="HireLoop Logo"
               width={128}
               height={32}
-              className="h-8 w-auto object-contain"
+              priority
+              style={{ width: "auto" }}
+              className="h-8 object-contain"
             />
           </Link>
         </div>
 
-        {/* Right / Desktop Nav + Mobile Dropdown */}
+        {/* Right: Desktop Nav + Auth Actions + Mobile Menu */}
         <div className="navbar-end gap-2 sm:gap-4">
           {/* Desktop Navigation Links */}
-          <nav aria-label="Primary Navigation" className="hidden md:flex items-center gap-6">
+          <nav
+            aria-label="Primary Navigation"
+            className="hidden md:flex items-center gap-6"
+          >
             {navLinks.map((item) => (
               <Link
                 key={item.href}
@@ -46,23 +65,42 @@ export default function Navbar() {
             className="hidden md:inline-block h-5 w-px bg-white/15 mx-1"
           />
 
-          {/* Auth Actions (Desktop) */}
+          {/* Auth Actions (Desktop / Tablet) */}
           <div className="hidden sm:flex items-center gap-4">
-            <Link
-              href="/sign-in"
-              className="text-sm font-medium text-[#7c6cff] hover:text-[#988bff] transition-colors"
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/sign-up"
-              className="btn btn-sm h-10 px-5 rounded-xl border-0 bg-[#665df5] hover:bg-[#554be8] text-white font-medium normal-case shadow-none"
-            >
-              Get Started
-            </Link>
+            {isPending ? (
+              <span className="text-xs text-gray-400">Checking session...</span>
+            ) : session?.user ? (
+              <>
+                <span className="text-sm font-medium text-gray-200">
+                  {userName}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="btn btn-sm h-10 px-4 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 text-white font-medium normal-case shadow-none cursor-pointer"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/sign-in"
+                  className="text-sm font-medium text-[#7c6cff] hover:text-[#988bff] transition-colors"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/sign-up"
+                  className="btn btn-sm h-10 px-5 rounded-xl border-0 bg-[#665df5] hover:bg-[#554be8] text-white font-medium normal-case shadow-none"
+                >
+                  Get Started
+                </Link>
+              </>
+            )}
           </div>
 
-          {/* Mobile Menu Dropdown */}
+          {/* Mobile Dropdown Menu */}
           <div className="dropdown dropdown-end md:hidden">
             <button
               type="button"
@@ -103,22 +141,41 @@ export default function Navbar() {
 
               <div className="divider my-1 before:bg-white/10 after:bg-white/10" />
 
-              <li className="sm:hidden">
-                <Link
-                  href="/sign-in"
-                  className="py-2.5 text-sm font-medium text-[#7c6cff] hover:bg-white/5 rounded-lg"
-                >
-                  Sign In
-                </Link>
-              </li>
-              <li className="sm:hidden mt-1">
-                <Link
-                  href="/sign-up"
-                  className="btn btn-sm h-10 bg-[#665df5] hover:bg-[#554be8] text-white border-0 rounded-xl justify-center"
-                >
-                  Get Started
-                </Link>
-              </li>
+              {session?.user ? (
+                <>
+                  <li className="sm:hidden px-3 py-1.5 text-xs text-gray-400">
+                    Signed in as {userName}
+                  </li>
+                  <li className="sm:hidden mt-1">
+                    <button
+                      type="button"
+                      onClick={handleSignOut}
+                      className="btn btn-sm h-10 bg-white/10 hover:bg-white/15 text-white border-0 rounded-xl justify-center"
+                    >
+                      Sign Out
+                    </button>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li className="sm:hidden">
+                    <Link
+                      href="/sign-in"
+                      className="py-2.5 text-sm font-medium text-[#7c6cff] hover:bg-white/5 rounded-lg"
+                    >
+                      Sign In
+                    </Link>
+                  </li>
+                  <li className="sm:hidden mt-1">
+                    <Link
+                      href="/sign-up"
+                      className="btn btn-sm h-10 bg-[#665df5] hover:bg-[#554be8] text-white border-0 rounded-xl justify-center"
+                    >
+                      Get Started
+                    </Link>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
         </div>

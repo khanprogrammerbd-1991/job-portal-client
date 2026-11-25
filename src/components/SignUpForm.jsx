@@ -55,6 +55,7 @@ export default function SignUpForm() {
       setIsLoading(false);
     }
   };
+  console.log(name, email, password);
 
   return (
     <div className="mt-6">
